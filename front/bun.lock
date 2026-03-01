@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "activo-front",
+      "name": "activo-frontend",
       "dependencies": {
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
