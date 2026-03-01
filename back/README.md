@@ -1,13 +1,21 @@
-# Backend Activo 
+# Backend Activo
 
-To install dependencies:
+Servidor Node.js con TypeScript
+
+## Instalación
 
 ```bash
-bun install
+npm install
 ```
 
-To run:
+## Desarrollo
 
 ```bash
-bun run index.ts
+npm run dev
+```
+
+## Producción
+
+```bash
+npm start
 ```

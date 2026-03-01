@@ -1,5 +1,5 @@
 # ACTIVO
-Administración y visualización de rutinas de entrenamiento
+Administración y visualización de rutinas de entrenamiento.
 
 Funcionalidades:
 - ABM de alumnos, ejercicios, rutinas
