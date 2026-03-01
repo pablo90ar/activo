@@ -1,13 +1,13 @@
 # Build stage
-FROM oven/bun:1-alpine AS build
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
 COPY package.json bun.lockb ./
-RUN bun install
+RUN npm install
 
 COPY . .
-RUN bun run build
+RUN npm run build
 
 # Serve stage
 FROM nginx:alpine
