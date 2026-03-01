@@ -13,7 +13,7 @@ Características:
 - Se accede desde una PC y se comparte pantalla a un televisor
 
 # Backend
-Servidor de node.js
+Servidor de node.js con npm
 
 # Frontend
 React WEB buildeado por bun.js
