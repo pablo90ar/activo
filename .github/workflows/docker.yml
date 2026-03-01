@@ -40,7 +40,7 @@ jobs:
 
       - uses: docker/build-push-action@v5
         with:
-          context: ./backend
+          context: ./back
           push: true
           platforms: linux/arm/v7
           tags: pablo90ar/activo-backend:latest
@@ -62,7 +62,7 @@ jobs:
 
       - uses: docker/build-push-action@v5
         with:
-          context: ./frontend
+          context: ./front
           push: true
           platforms: linux/arm/v7
           tags: pablo90ar/activo-frontend:latest
