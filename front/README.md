@@ -1,5 +1,25 @@
 # Frontend Activo
 
+Aplicación React con TypeScript
+
+## Instalación
+
+```bash
+bun install
+```
+
+## Desarrollo
+
+```bash
+bun run dev
+```
+
+## Producción
+
+```bash
+bun run build
+```
+
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
