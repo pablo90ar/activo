@@ -16,7 +16,7 @@ Características:
 Servidor de node.js con npm
 
 # Frontend
-React WEB buildeado por bun.js
+React WEB buildeado por npm
 
 # Despliegue
 - Pushear cambios a Repo de Gitlab público 

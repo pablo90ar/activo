@@ -5,19 +5,19 @@ Aplicación React con TypeScript
 ## Instalación
 
 ```bash
-bun install
+npm install
 ```
 
 ## Desarrollo
 
 ```bash
-bun run dev
+npm run dev
 ```
 
 ## Producción
 
 ```bash
-bun run build
+npm run build
 ```
 
 
