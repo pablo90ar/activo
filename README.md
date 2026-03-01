@@ -25,4 +25,4 @@ React WEB buildeado por bun.js
 - Pushear imagen a dockerhub
 - Conectar raspberry por ssh
 - Bajar nueva imagen de dockerhub
-- Reejecutar docker swarm
+- Reejecutar docker compose
