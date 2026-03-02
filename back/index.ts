@@ -1,10 +1,11 @@
-import http from 'http';
+import express from 'express';
+import routes from './src/routes/index';
 
-const server = http.createServer((req, res) => {
-  res.writeHead(200);
-  res.end("Hola desde el backend de Activo");
-});
+const app = express();
 
-server.listen(3000, () => {
-  console.log("Servidor corriendo en puerto 3000");
+app.use(express.json());
+app.use('/api', routes);
+
+app.listen(3000, () => {
+  console.log('Servidor corriendo en puerto 3000');
 });

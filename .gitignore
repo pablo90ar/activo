@@ -1,2 +1,6 @@
 AGENT.md
-build_images.sh
+docker_build_images.sh
+
+# Database files and backups
+data/
+backups/

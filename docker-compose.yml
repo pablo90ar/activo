@@ -8,6 +8,9 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+    volumes:
+      - ./data:/app/data
+      - ./backups:/app/backups
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
 
@@ -22,6 +25,15 @@ services:
       - backend
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
+
+  db-backup:
+    image: alpine:latest
+    container_name: activo-db-backup
+    restart: unless-stopped
+    volumes:
+      - ./data:/data
+      - ./backups:/backups
+    command: sh -c "while true; do cp /data/activo.db /backups/activo_$$(date +%Y%m%d_%H%M%S).db && find /backups -name 'activo_*.db' -mtime +7 -delete && sleep 86400; done"
 
   watchtower:
     image: containrrr/watchtower:latest

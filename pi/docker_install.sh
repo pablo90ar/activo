@@ -1,4 +1,4 @@
-# PASO 2 — Agregar repo oficial pero apuntando a bookworm
+# PASO 1 — Agregar repo oficial pero apuntando a bookworm
 sudo apt update
 sudo apt install ca-certificates curl gnupg -y
 
@@ -13,22 +13,22 @@ echo \
 
 dpkg --print-architecture
 
-# PASO 3 — Instalar Docker
+# PASO 2 — Instalar Docker
 sudo apt update
 sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
-# PASO 4 — Activar y probar
+# PASO 3 — Activar y probar
 sudo systemctl enable docker
 sudo systemctl start docker
 sudo docker run hello-world
 
-# PASO 5 — Añadir usuario actual al grupo de docker
+# PASO 4 — Añadir usuario actual al grupo de docker
 sudo usermod -aG docker $USER
 
-# PASO 6 — Reiniciar sesión para aplicar cambios
+# PASO 5 — Reiniciar sesión para aplicar cambios
 docker version
 docker compose version
 
-# PASO 7 - Si se pierde conexión con la rasberry reiniciar
+# PASO 6 - Si se pierde conexión con la rasberry reiniciar
 sudo systemctl stop docker
 sudo reboot
