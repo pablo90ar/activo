@@ -16,7 +16,7 @@ const router = Router();
 
 // Health check
 router.get('/healthcheck', (req, res) => {
-  res.json({ status: 'ok' });
+  res.json({ status: 'ok', message: 'Hola Julita :)' });
 });
 
 // Mount entity routes
