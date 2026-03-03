@@ -16,7 +16,7 @@ services:
 
   frontend:
     image: pablo90ar/activo-frontend:latest
-    platform: linux/arm/v8
+    # platform: linux/arm/v8  # Commented out to use emulation for AMD64 image
     container_name: activo-frontend
     restart: unless-stopped
     ports:
