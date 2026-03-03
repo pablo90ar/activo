@@ -19,5 +19,3 @@ npm run dev
 ```bash
 npm start
 ```
-
-2
