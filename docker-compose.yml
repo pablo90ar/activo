@@ -1,7 +1,7 @@
 services:
   backend:
     image: pablo90ar/activo-backend:latest
-    platform: linux/arm/v8
+    platform: linux/arm64
     container_name: activo-backend
     restart: unless-stopped
     ports:
@@ -16,7 +16,7 @@ services:
 
   frontend:
     image: pablo90ar/activo-frontend:latest
-    platform: linux/arm/v8
+    platform: linux/arm64
     container_name: activo-frontend
     restart: unless-stopped
     ports:
