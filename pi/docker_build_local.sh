@@ -6,12 +6,16 @@ echo "Building images locally for ARM architecture..."
 
 echo "Building backend..."
 cd back
-docker buildx build --platform linux/amd64,linux/arm64 -t pablo90ar/activo-backend:latest . --push
+docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v8 -t pablo90ar/activo-backend:latest .
+docker push pablo90ar/activo-backend:latest
+
 
 cd ..
 
 echo "Building frontend..."
 cd front
-docker buildx build --platform linux/amd64,linux/arm64 -t pablo90ar/activo-frontend:latest . --push
+docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v8 -t pablo90ar/activo-frontend:latest .
+docker push pablo90ar/activo-backend:latest
+
 
 echo "Local build complete!"
