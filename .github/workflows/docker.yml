@@ -44,7 +44,7 @@ jobs:
         with:
           context: ./back
           push: true
-          platforms: linux/amd64,linux/arm/v8
+          platforms: linux/amd64
           tags: pablo90ar/activo-backend:latest
 
   build-frontend:
