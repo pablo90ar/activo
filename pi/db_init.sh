@@ -154,7 +154,7 @@ CREATE INDEX idx_trainee_routine_trainee ON trainee_routine(trainee_id);
 CREATE INDEX idx_trainee_routine_routine ON trainee_routine(routine_id);
 CREATE INDEX idx_training_day_routine ON training_day(routine_id, list_order);
 CREATE INDEX idx_set_training_day ON day_set(training_day_id, list_order);
-CREATE INDEX idx_exercises_set_set ON exercises_set(set_id, list_order);
+CREATE INDEX idx_exercises_set ON exercises_set(day_set_id, list_order);
 CREATE INDEX idx_completed_training_day_trainee ON completed_training_day(trainee_id, completed_date);
 CREATE INDEX idx_exercise_register_trainee ON trainee_exercise_register(trainee_id, training_date);
 EOF
