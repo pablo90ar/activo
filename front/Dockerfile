@@ -6,11 +6,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-# Install lightningcss binary for ARM if needed
-RUN if [ "$(uname -m)" = "aarch64" ]; then \
-    npm install lightningcss-linux-arm64-musl; \
-fi
-
 COPY . .
 RUN npm run build
 
