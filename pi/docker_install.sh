@@ -8,7 +8,7 @@ curl -fsSL https://download.docker.com/linux/raspbian/gpg | \
 sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 
 echo \
-  "deb [arch=armhf signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/raspbian bookworm stable" | \
+  "deb [arch=arm64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/raspbian bookworm stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 dpkg --print-architecture
