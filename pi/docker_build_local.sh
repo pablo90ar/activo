@@ -1,5 +1,5 @@
 #!/bin/bash
-
+cd ..
 echo "Building images locally for ARM architecture..."
 
 echo "Building backend..."
