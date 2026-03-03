@@ -1,7 +1,7 @@
 services:
   backend:
     image: pablo90ar/activo-backend:latest
-    platform: linux/arm64
+    # platform: linux/arm64  # Commented out to use emulation for AMD64 image
     container_name: activo-backend
     restart: unless-stopped
     ports:
