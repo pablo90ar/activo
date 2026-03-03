@@ -44,7 +44,7 @@ jobs:
         with:
           context: ./back
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           tags: pablo90ar/activo-backend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -70,7 +70,7 @@ jobs:
         with:
           context: ./front
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           tags: pablo90ar/activo-frontend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
