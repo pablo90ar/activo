@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 
-const dbPath = process.env.DB_PATH || path.join(process.cwd(), 'data', 'activo.db');
+const dbPath = process.env.DB_PATH || path.join(process.cwd(), '..', 'data', 'activo.db');
 const dbDir = path.dirname(dbPath);
 
 if (!fs.existsSync(dbDir)) {
