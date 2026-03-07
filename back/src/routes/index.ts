@@ -20,18 +20,17 @@ router.get('/healthcheck', (req, res) => {
 });
 
 // Mount entity routes
-router.use('/trainee', traineesRoutes);
-router.use('/routine', routinesRoutes);
-router.use('/trainee-routine', traineeRoutinesRoutes);
-router.use('/training-day', trainingDaysRoutes);
-router.use('/day-set', daySetsRoutes);
-router.use('/exercises-set', exercisesSetsRoutes);
-router.use('/exercise', exercisesRoutes);
-router.use('/muscle-group', muscleGroupsRoutes);
-router.use('/exercise-group', exerciseGroupRoutes);
+router.use('/trainees', traineesRoutes);
+router.use('/routines', routinesRoutes);
+router.use('/trainee-routines', traineeRoutinesRoutes);
+router.use('/training-days', trainingDaysRoutes);
+router.use('/day-sets', daySetsRoutes);
+router.use('/exercises-sets', exercisesSetsRoutes);
+router.use('/exercises', exercisesRoutes);
+router.use('/muscle-groups', muscleGroupsRoutes);
+router.use('/exercise-groups', exerciseGroupRoutes);
 router.use('/tools', toolsRoutes);
-router.use('/tool', toolsRoutes);
-router.use('/exercise-tool', exerciseToolsRoutes);
-router.use('/completed-training-day', completedTrainingDaysRoutes);
+router.use('/exercise-tools', exerciseToolsRoutes);
+router.use('/completed-training-days', completedTrainingDaysRoutes);
 
 export default router;
