@@ -3,7 +3,7 @@
 # Script to initialize SQLite database with schema
 # Usage: ./db_init.sh [path_to_db]
 
-DB_PATH="${1:-../data/activo.db}"
+DB_PATH="${1:-../back/data/activo.db}"
 
 mkdir -p "$(dirname "$DB_PATH")"
 

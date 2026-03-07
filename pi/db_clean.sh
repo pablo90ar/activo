@@ -4,7 +4,7 @@
 # Usage: ./clean_db.sh [path_to_db]
 # Run from Raspberry Pi host, not inside container
 
-DB_PATH="${1:-../data/activo.db}"
+DB_PATH="${1:-../back/data/activo.db}"
 
 if [ ! -f "$DB_PATH" ]; then
     echo "Database not found at: $DB_PATH"
