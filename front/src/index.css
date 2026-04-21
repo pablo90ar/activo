@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-sage: #9AA595;
+  --color-brand-olive: #6C766B;
+  --color-brand-olive-hover: #5A645A;
+  --color-brand-cream: #ECEBE2;
+  --color-brand-cream-dark: #dddcd3;
+  --color-brand-action: #5B7E6A;
+  --color-brand-action-hover: #4A6D59;
+  --color-brand-dark: #3A3F39;
+  --color-brand-danger: #FF0000;
+  --color-brand-success: #34D399;
+  --color-brand-muted: #b5bdb1;
+}
+
+@keyframes fill-bar {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes clap-rise {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translateY(-110vh) scale(1); opacity: 0; }
+}

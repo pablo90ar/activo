@@ -1,0 +1,62 @@
+services:
+  init:
+    image: alpine:latest
+    container_name: activo-init
+    restart: "no"
+    volumes:
+      - ./back:/back
+    command: sh -c "mkdir -p /back/data /back/photos /back/backups /back/config"
+
+  backend:
+    image: pablo90ar/activo-backend:latest
+    platform: linux/arm/v8
+    container_name: activo-backend
+    restart: unless-stopped
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./back/data:/app/data
+      - ./back/photos:/app/photos
+      - ./back/backups:/app/backups
+      - ./back/config:/app/config
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  frontend:
+    image: pablo90ar/activo-frontend:latest
+    platform: linux/arm/v8
+    container_name: activo-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  db-backup:
+    image: alpine:latest
+    container_name: activo-db-backup
+    restart: unless-stopped
+    volumes:
+      - ./back/data:/data
+      - ./back/backups:/backups
+    command: sh -c "while true; do cp /data/activo.db /backups/activo_$$(date +%Y%m%d_%H%M%S).db && find /backups -name 'activo_*.db' -mtime +7 -delete && sleep 86400; done"
+
+  watchtower:
+    image: containrrr/watchtower:1.7.1
+    platform: linux/arm64
+    container_name: activo-watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=300
+      - WATCHTOWER_LABEL_ENABLE=true
+      - DOCKER_API_VERSION=1.54

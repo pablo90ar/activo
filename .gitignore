@@ -1,0 +1,8 @@
+TODO.md
+ADMIN.md
+
+# Database files and backups
+/back/data/
+/back/backups/
+/back/photos/
+/back/photos/system/
