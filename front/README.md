@@ -131,3 +131,4 @@ front/src/
 └── data/
     └── celebration-phrases.txt # Frases aleatorias para la animación de festejo
 ```
+.
