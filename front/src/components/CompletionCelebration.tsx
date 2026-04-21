@@ -72,7 +72,7 @@ export default function CompletionCelebration({
 
   return (
     <div
-      className="hidden md:flex fixed inset-0 z-[100] items-center justify-center cursor-pointer"
+      className="hidden md:flex fixed inset-0 z-100 items-center justify-center cursor-pointer"
       onClick={dismiss}
     >
       {/* Overlay */}
@@ -107,8 +107,8 @@ export default function CompletionCelebration({
           size="w-72 h-72"
           textSize="text-9xl"
         />
-        <span className="text-5xl font-bold text-[#3A3F39]">{name}</span>
-        <span className="text-3xl font-bold text-[#5B7E6A]">{phrase}</span>
+        <span className="text-5xl font-bold text-brand-dark">{name}</span>
+        <span className="text-3xl font-bold text-brand-action">{phrase}</span>
         <img
           src="/favicon.png"
           alt="Activo"
