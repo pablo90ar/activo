@@ -52,7 +52,9 @@ export default function RoutineDayViewer({
   const [dayIndex, setDayIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
-  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
+    null,
+  );
   const [dayCounts, setDayCounts] = useState<Record<string, number>>({});
 
   const fetchCounts = () => {
@@ -236,7 +238,7 @@ export default function RoutineDayViewer({
                       )}
                       <div className="flex gap-2">
                         <div className="flex items-center shrink-0">
-                          <span className="text-xl font-bold text-brand-olive">
+                          <span className="text-[1.8rem] font-bold text-brand-olive">
                             {set.iterations}
                           </span>
                         </div>
@@ -253,7 +255,7 @@ export default function RoutineDayViewer({
                               {!set.is_circuit && ex.repetitions > 0 && (
                                 <span className="text-xl font-bold text-brand-dark text-right shrink-0 ml-2">
                                   {ex.repetitions}
-                                  <span className="text-sm font-normal text-brand-muted">
+                                  <span className="text-sm font-normal text-brand-olive">
                                     {repsUnit}
                                   </span>
                                 </span>
@@ -262,7 +264,7 @@ export default function RoutineDayViewer({
                                 {ex.weight > 0 && (
                                   <>
                                     {ex.weight}
-                                    <span className="text-sm font-normal text-brand-muted">
+                                    <span className="text-sm font-normal text-brand-olive">
                                       {weightUnit}
                                     </span>
                                   </>
@@ -288,16 +290,28 @@ export default function RoutineDayViewer({
       </div>
 
       {selectedExercise && (
-        <Modal title={selectedExercise.exercise_name} onClose={() => setSelectedExercise(null)} maxWidth="max-w-sm">
+        <Modal
+          title={selectedExercise.exercise_name}
+          onClose={() => setSelectedExercise(null)}
+          maxWidth="max-w-sm"
+        >
           <div className="p-5 flex flex-col gap-3">
-            {selectedExercise.exercise_description
-              ? <p className="text-brand-dark whitespace-pre-line">{selectedExercise.exercise_description}</p>
-              : <p className="text-brand-olive italic">Sin descripción</p>
-            }
+            {selectedExercise.exercise_description ? (
+              <p className="text-brand-dark whitespace-pre-line">
+                {selectedExercise.exercise_description}
+              </p>
+            ) : (
+              <p className="text-brand-olive italic">Sin descripción</p>
+            )}
             {selectedExercise.exercise_tags && (
               <div className="flex flex-wrap gap-1">
                 {selectedExercise.exercise_tags.split(",").map((tag) => (
-                  <span key={tag} className="px-2 py-0.5 text-xs bg-brand-cream text-brand-olive rounded-full">{tag}</span>
+                  <span
+                    key={tag}
+                    className="px-2 py-0.5 text-xs bg-brand-cream text-brand-olive rounded-full"
+                  >
+                    {tag}
+                  </span>
                 ))}
               </div>
             )}

@@ -9,6 +9,7 @@ import {
 import { getExercise, updateExercise } from "../services/exerciseService";
 import type { ExerciseTag } from "../types/api";
 import { usePageTitle } from "../hooks/usePageTitle";
+import { useSettings } from "../hooks/useSettings";
 import ConfirmDialog from "../components/ConfirmDialog";
 import PageHeader from "../components/PageHeader";
 import ActionButton from "../components/ActionButton";
@@ -29,6 +30,7 @@ export default function ExerciseTags() {
     exercises: Array<{ exercise_id: string; name: string }>;
   } | null>(null);
   const [exercisesLoading, setExercisesLoading] = useState(false);
+  const { forceUppercase } = useSettings();
 
   usePageTitle("Agrupadores");
 
@@ -216,11 +218,16 @@ export default function ExerciseTags() {
                     )}
                   </div>
                 ) : (
-                  <p className="font-semibold text-brand-dark truncate min-w-0">
+                  <p
+                    className={`font-semibold text-brand-dark truncate min-w-0${forceUppercase ? " uppercase" : ""}`}
+                  >
                     {g.name}
                   </p>
                 )}
-                <div className="flex items-center gap-3 shrink-0" onClick={(e) => e.stopPropagation()}>
+                <div
+                  className="flex items-center gap-3 shrink-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <span
                     onClick={() => openExercises(g)}
                     className={`text-sm ${(g.exercise_count ?? 0) > 0 ? "text-brand-action underline hover:text-brand-action-hover cursor-pointer" : "text-brand-olive"}`}

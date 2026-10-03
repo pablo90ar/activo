@@ -1,8 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { getExercisesPaginated, deleteExercise, getExerciseRoutines } from "../services/exerciseService";
+import {
+  getExercisesPaginated,
+  deleteExercise,
+  getExerciseRoutines,
+} from "../services/exerciseService";
 import { getTags } from "../services/tagService";
 import type { ExerciseData, ExerciseTag, RoutineRef } from "../types/api";
 import { usePageTitle } from "../hooks/usePageTitle";
+import { useSettings } from "../hooks/useSettings";
 import ConfirmDialog from "../components/ConfirmDialog";
 import ExerciseModal from "../components/ExerciseModal";
 import MergeExercisesModal from "../components/MergeExercisesModal";
@@ -24,9 +29,15 @@ export default function Exercises() {
   const [error, setError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ExerciseData | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [routinesModal, setRoutinesModal] = useState<{ exercise: ExerciseData; routines: Array<RoutineRef> } | null>(null);
+  const [routinesModal, setRoutinesModal] = useState<{
+    exercise: ExerciseData;
+    routines: Array<RoutineRef>;
+  } | null>(null);
   const [routinesLoading, setRoutinesLoading] = useState(false);
-  const [modal, setModal] = useState<{ mode: "create" | "edit"; exerciseId?: string } | null>(null);
+  const [modal, setModal] = useState<{
+    mode: "create" | "edit";
+    exerciseId?: string;
+  } | null>(null);
   const [tags, setTags] = useState<Array<ExerciseTag>>([]);
   const [selectedTags, setSelectedTags] = useState<Array<string>>([]);
   const [filterEmpty, setFilterEmpty] = useState(false);
@@ -34,6 +45,7 @@ export default function Exercises() {
 
   const sentinelRef = useRef<HTMLDivElement>(null);
   const hasMore = exercises.length < total;
+  const { forceUppercase } = useSettings();
 
   usePageTitle("Ejercicios");
 
@@ -42,38 +54,52 @@ export default function Exercises() {
     return () => clearTimeout(t);
   }, [search]);
 
-  useEffect(() => { getTags().then(setTags).catch(() => {}); }, []);
+  useEffect(() => {
+    getTags()
+      .then(setTags)
+      .catch(() => {});
+  }, []);
 
-  const fetchPage = useCallback(async (offset: number, append: boolean) => {
-    if (offset === 0) setLoading(true); else setLoadingMore(true);
-    try {
-      const res = await getExercisesPaginated({
-        offset, limit: PAGE_SIZE,
-        search: debouncedSearch || undefined,
-        groups: selectedTags.length ? selectedTags : undefined,
-        filterEmpty: filterEmpty || undefined,
-      });
-      setExercises(prev => append ? [...prev, ...res.items] : res.items);
-      setTotal(res.total);
-      setError(null);
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  }, [debouncedSearch, selectedTags, filterEmpty]);
+  const fetchPage = useCallback(
+    async (offset: number, append: boolean) => {
+      if (offset === 0) setLoading(true);
+      else setLoadingMore(true);
+      try {
+        const res = await getExercisesPaginated({
+          offset,
+          limit: PAGE_SIZE,
+          search: debouncedSearch || undefined,
+          groups: selectedTags.length ? selectedTags : undefined,
+          filterEmpty: filterEmpty || undefined,
+        });
+        setExercises((prev) => (append ? [...prev, ...res.items] : res.items));
+        setTotal(res.total);
+        setError(null);
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
+      }
+    },
+    [debouncedSearch, selectedTags, filterEmpty],
+  );
 
-  useEffect(() => { fetchPage(0, false); }, [fetchPage]);
+  useEffect(() => {
+    fetchPage(0, false);
+  }, [fetchPage]);
 
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el) return;
-    const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && hasMore && !loading && !loadingMore) {
-        fetchPage(exercises.length, true);
-      }
-    }, { rootMargin: "200px" });
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasMore && !loading && !loadingMore) {
+          fetchPage(exercises.length, true);
+        }
+      },
+      { rootMargin: "200px" },
+    );
     obs.observe(el);
     return () => obs.disconnect();
   }, [hasMore, loading, loadingMore, exercises.length, fetchPage]);
@@ -83,7 +109,10 @@ export default function Exercises() {
     setRoutinesLoading(true);
     setRoutinesModal({ exercise: ex, routines: [] });
     try {
-      setRoutinesModal({ exercise: ex, routines: await getExerciseRoutines(ex.exercise_id) });
+      setRoutinesModal({
+        exercise: ex,
+        routines: await getExerciseRoutines(ex.exercise_id),
+      });
     } catch {
       setRoutinesModal(null);
     } finally {
@@ -107,7 +136,10 @@ export default function Exercises() {
 
   const RoutineCount = ({ ex }: { ex: ExerciseData }) =>
     ex.routine_count > 0 ? (
-      <button onClick={() => openRoutines(ex)} className="text-sm text-brand-action underline hover:text-brand-action-hover transition">
+      <button
+        onClick={() => openRoutines(ex)}
+        className="text-sm text-brand-action underline hover:text-brand-action-hover transition"
+      >
         {ex.routine_count} {ex.routine_count === 1 ? "rutina" : "rutinas"}
       </button>
     ) : (
@@ -131,14 +163,18 @@ export default function Exercises() {
             <button
               onClick={() => setModal({ mode: "create" })}
               className="px-4 py-2 bg-brand-action text-white rounded-lg shadow font-medium hover:bg-brand-action-hover transition shrink-0"
-            >+ Nuevo</button>
+            >
+              + Nuevo
+            </button>
           </div>
           <div className="flex gap-2 items-center">
             <ViewToggle value={viewMode} onChange={setViewMode} />
             <button
               onClick={() => setMergeOpen(true)}
               className="px-4 py-2 bg-white text-brand-olive rounded-lg shadow font-medium hover:bg-gray-100 transition shrink-0 text-sm"
-            >Unificar</button>
+            >
+              Unificar
+            </button>
           </div>
         </div>
 
@@ -147,29 +183,53 @@ export default function Exercises() {
             <button
               onClick={() => setSelectedTags([])}
               className={`px-2 py-0.5 text-xs rounded-full transition ${selectedTags.length === 0 && !filterEmpty ? "bg-brand-olive text-white" : "bg-white text-brand-olive hover:bg-gray-100"}`}
-            >Todos</button>
+            >
+              Todos
+            </button>
             <button
-              onClick={() => { setFilterEmpty(!filterEmpty); setSelectedTags([]); }}
+              onClick={() => {
+                setFilterEmpty(!filterEmpty);
+                setSelectedTags([]);
+              }}
               className={`px-2 py-0.5 text-xs rounded-full transition ${filterEmpty ? "bg-brand-olive text-white" : "bg-white text-brand-olive hover:bg-gray-100"}`}
-            >Vacíos</button>
+            >
+              Vacíos
+            </button>
             {tags.map((t) => (
               <button
                 key={t.group_id}
-                onClick={() => { setSelectedTags((prev) => prev.includes(t.group_id) ? prev.filter((g) => g !== t.group_id) : [...prev, t.group_id]); setFilterEmpty(false); }}
+                onClick={() => {
+                  setSelectedTags((prev) =>
+                    prev.includes(t.group_id)
+                      ? prev.filter((g) => g !== t.group_id)
+                      : [...prev, t.group_id],
+                  );
+                  setFilterEmpty(false);
+                }}
                 className={`px-2 py-0.5 text-xs rounded-full transition ${selectedTags.includes(t.group_id) ? "bg-brand-olive text-white" : "bg-white text-brand-olive hover:bg-gray-100"}`}
-              >{t.name}</button>
+              >
+                {t.name}
+              </button>
             ))}
           </div>
         )}
 
-        {loading && <p className="text-center text-brand-dark text-lg">Cargando...</p>}
-        {error && <p className="text-center text-red-700 text-lg">Error: {error}</p>}
+        {loading && (
+          <p className="text-center text-brand-dark text-lg">Cargando...</p>
+        )}
+        {error && (
+          <p className="text-center text-red-700 text-lg">Error: {error}</p>
+        )}
         {!loading && !error && exercises.length === 0 && (
-          <p className="text-center text-brand-olive text-lg">No se encontraron ejercicios.</p>
+          <p className="text-center text-brand-olive text-lg">
+            No se encontraron ejercicios.
+          </p>
         )}
 
         {!loading && exercises.length > 0 && (
-          <p className="text-xs text-brand-olive mb-2">{exercises.length} de {total} ejercicios</p>
+          <p className="text-xs text-brand-olive mb-2">
+            {exercises.length} de {total} ejercicios
+          </p>
         )}
 
         {viewMode === "list" && exercises.length > 0 && (
@@ -177,13 +237,27 @@ export default function Exercises() {
             {exercises.map((e) => (
               <div
                 key={e.exercise_id}
-                onClick={() => setModal({ mode: "edit", exerciseId: e.exercise_id })}
+                onClick={() =>
+                  setModal({ mode: "edit", exerciseId: e.exercise_id })
+                }
                 className="bg-white rounded-lg shadow px-4 py-3 flex items-center justify-between gap-3 cursor-pointer hover:bg-brand-cream/60 transition"
               >
-                <p className="font-semibold text-brand-dark truncate min-w-0">{e.name}</p>
-                <div className="flex items-center gap-3 shrink-0" onClick={(ev) => ev.stopPropagation()}>
+                <p
+                  className={`font-semibold text-brand-dark truncate min-w-0${forceUppercase ? " uppercase" : ""}`}
+                >
+                  {e.name}
+                </p>
+                <div
+                  className="flex items-center gap-3 shrink-0"
+                  onClick={(ev) => ev.stopPropagation()}
+                >
                   <RoutineCount ex={e} />
-                  <ActionButton icon="🗑️" variant="delete" disabled={e.routine_count > 0} onClick={() => setDeleteTarget(e)} />
+                  <ActionButton
+                    icon="🗑️"
+                    variant="delete"
+                    disabled={e.routine_count > 0}
+                    onClick={() => setDeleteTarget(e)}
+                  />
                 </div>
               </div>
             ))}
@@ -195,17 +269,36 @@ export default function Exercises() {
             {exercises.map((e) => (
               <div
                 key={e.exercise_id}
-                onClick={() => setModal({ mode: "edit", exerciseId: e.exercise_id })}
+                onClick={() =>
+                  setModal({ mode: "edit", exerciseId: e.exercise_id })
+                }
                 className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col cursor-pointer hover:bg-brand-cream/60 transition"
               >
                 <div className="bg-brand-olive flex items-center justify-center py-6">
-                  <span className="text-4xl font-bold text-white">{e.name.charAt(0).toUpperCase()}</span>
+                  <span className="text-4xl font-bold text-white">
+                    {e.name.charAt(0).toUpperCase()}
+                  </span>
                 </div>
                 <div className="p-3 flex flex-col flex-1">
-                  <p className="font-semibold text-brand-dark truncate text-center">{e.name}</p>
-                  <div className="text-center mt-1"><RoutineCount ex={e} /></div>
-                  <div className="flex gap-2 mt-3 justify-center" onClick={(ev) => ev.stopPropagation()}>
-                    <ActionButton icon="🗑️" variant="delete" compact disabled={e.routine_count > 0} onClick={() => setDeleteTarget(e)} />
+                  <p
+                    className={`font-semibold text-brand-dark truncate text-center${forceUppercase ? " uppercase" : ""}`}
+                  >
+                    {e.name}
+                  </p>
+                  <div className="text-center mt-1">
+                    <RoutineCount ex={e} />
+                  </div>
+                  <div
+                    className="flex gap-2 mt-3 justify-center"
+                    onClick={(ev) => ev.stopPropagation()}
+                  >
+                    <ActionButton
+                      icon="🗑️"
+                      variant="delete"
+                      compact
+                      disabled={e.routine_count > 0}
+                      onClick={() => setDeleteTarget(e)}
+                    />
                   </div>
                 </div>
               </div>
@@ -214,7 +307,9 @@ export default function Exercises() {
         )}
 
         <div ref={sentinelRef} className="h-4" />
-        {loadingMore && <p className="text-center text-brand-olive py-2">Cargando más...</p>}
+        {loadingMore && (
+          <p className="text-center text-brand-olive py-2">Cargando más...</p>
+        )}
       </div>
 
       {modal && (
@@ -222,20 +317,32 @@ export default function Exercises() {
           mode={modal.mode}
           exerciseId={modal.exerciseId}
           onClose={() => setModal(null)}
-          onSaved={() => { setModal(null); fetchPage(0, false); }}
+          onSaved={() => {
+            setModal(null);
+            fetchPage(0, false);
+          }}
         />
       )}
 
       {routinesModal && (
-        <Modal title={routinesModal.exercise.name} onClose={() => setRoutinesModal(null)} maxWidth="max-w-sm">
+        <Modal
+          title={routinesModal.exercise.name}
+          onClose={() => setRoutinesModal(null)}
+          maxWidth="max-w-sm"
+        >
           <div className="p-5">
-            <p className="text-sm text-brand-olive mb-3">Rutinas que usan este ejercicio:</p>
+            <p className="text-sm text-brand-olive mb-3">
+              Rutinas que usan este ejercicio:
+            </p>
             {routinesLoading ? (
               <p className="text-center text-brand-olive">Cargando...</p>
             ) : (
               <ul className="flex flex-col gap-2">
                 {routinesModal.routines.map((r) => (
-                  <li key={r.routine_id} className="bg-brand-cream rounded-lg px-4 py-2 text-brand-dark font-medium">
+                  <li
+                    key={r.routine_id}
+                    className="bg-brand-cream rounded-lg px-4 py-2 text-brand-dark font-medium"
+                  >
                     {r.name}
                   </li>
                 ))}
@@ -248,7 +355,10 @@ export default function Exercises() {
       {mergeOpen && (
         <MergeExercisesModal
           onClose={() => setMergeOpen(false)}
-          onMerged={() => { setMergeOpen(false); fetchPage(0, false); }}
+          onMerged={() => {
+            setMergeOpen(false);
+            fetchPage(0, false);
+          }}
         />
       )}
 

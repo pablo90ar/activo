@@ -19,6 +19,7 @@ export default function Settings() {
     repsUnit: currentRepsUnit,
     weightUnit: currentWeightUnit,
     trainingTitle: currentTrainingTitle,
+    forceUppercase: currentForceUppercase,
     refresh,
   } = useSettings();
   const [systemName, setSystemName] = useState("");
@@ -26,6 +27,7 @@ export default function Settings() {
   const [repsUnit, setRepsUnit] = useState("rp");
   const [weightUnit, setWeightUnit] = useState("kg");
   const [trainingTitle, setTrainingTitle] = useState("Entrenamiento");
+  const [forceUppercase, setForceUppercase] = useState(false);
   const [saved, setSaved] = useState(false);
   const [logoKey, setLogoKey] = useState(0);
   const [logoExists, setLogoExists] = useState(false);
@@ -55,6 +57,9 @@ export default function Settings() {
   useEffect(() => {
     setTrainingTitle(currentTrainingTitle);
   }, [currentTrainingTitle]);
+  useEffect(() => {
+    setForceUppercase(currentForceUppercase);
+  }, [currentForceUppercase]);
 
   useEffect(() => {
     fetch(getLogoUrl(), { method: "HEAD" })
@@ -62,13 +67,23 @@ export default function Settings() {
       .catch(() => setLogoExists(false));
   }, [logoKey]);
 
+  const isDirty =
+    systemName !== current ||
+    showClock !== currentClock ||
+    repsUnit !== currentRepsUnit ||
+    weightUnit !== currentWeightUnit ||
+    trainingTitle !== currentTrainingTitle ||
+    forceUppercase !== currentForceUppercase;
+
   const handleSave = async () => {
+    if (!isDirty) return;
     await updateSettings({
       systemName,
       showClock,
       repsUnit,
       weightUnit,
       trainingTitle,
+      forceUppercase,
     });
     refresh();
     setSaved(true);
@@ -117,7 +132,9 @@ export default function Settings() {
             </label>
 
             <div className="flex-1 space-y-2">
-              <span className="block text-sm font-medium text-brand-dark">Logo del sistema</span>
+              <span className="block text-sm font-medium text-brand-dark">
+                Logo del sistema
+              </span>
               <div className="flex items-center gap-3">
                 {logoExists ? (
                   <img
@@ -169,6 +186,20 @@ export default function Settings() {
               />
             </button>
           </label>
+          <label className="flex items-center gap-3 text-sm font-medium text-brand-dark cursor-pointer">
+            <span>Forzar mayúsculas</span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={forceUppercase}
+              onClick={() => setForceUppercase(!forceUppercase)}
+              className={`relative w-11 h-6 rounded-full transition ${forceUppercase ? "bg-brand-action" : "bg-gray-300"}`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${forceUppercase ? "translate-x-5" : ""}`}
+              />
+            </button>
+          </label>
           <div className="flex gap-4">
             <label className="block text-sm font-medium text-brand-dark flex-1">
               Abreviación de repeticiones
@@ -210,7 +241,8 @@ export default function Settings() {
           </label>
           <button
             onClick={handleSave}
-            className="px-4 py-2 bg-brand-action text-white rounded-lg hover:bg-brand-action-hover transition"
+            disabled={!isDirty}
+            className="px-4 py-2 bg-brand-action text-white rounded-lg hover:bg-brand-action-hover transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-brand-action"
           >
             {saved ? "✓ Guardado" : "Guardar"}
           </button>
@@ -243,7 +275,9 @@ export default function Settings() {
               className={`block w-full px-3 py-2 rounded-lg border shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-sage ${confirmPw && confirmPw !== newPw ? "border-red-400" : "border-gray-300"}`}
             />
             {confirmPw && confirmPw !== newPw && (
-              <p className="text-sm text-red-600">Las contraseñas no coinciden</p>
+              <p className="text-sm text-red-600">
+                Las contraseñas no coinciden
+              </p>
             )}
             {pwMsg && (
               <p
@@ -253,7 +287,12 @@ export default function Settings() {
               </p>
             )}
             <button
-              disabled={pwLoading || !currentPw || newPw.length < 6 || newPw !== confirmPw}
+              disabled={
+                pwLoading ||
+                !currentPw ||
+                newPw.length < 6 ||
+                newPw !== confirmPw
+              }
               onClick={async () => {
                 setPwLoading(true);
                 setPwMsg(null);
@@ -264,7 +303,10 @@ export default function Settings() {
                   setNewPw("");
                   setConfirmPw("");
                 } catch (e) {
-                  setPwMsg({ text: e instanceof Error ? e.message : "Error desconocido", ok: false });
+                  setPwMsg({
+                    text: e instanceof Error ? e.message : "Error desconocido",
+                    ok: false,
+                  });
                 } finally {
                   setPwLoading(false);
                 }
