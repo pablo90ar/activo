@@ -1,10 +1,25 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import type { ReactNode } from "react";
 import { getSettings, getLogoUrl } from "../services/settingsService";
 
 const FALLBACK_LOGO = "/favicon.png";
 
-const Ctx = createContext({ systemName: "Activo", showClock: true, repsUnit: "rp", weightUnit: "kg", trainingTitle: "Entrenamiento", logoUrl: FALLBACK_LOGO, refresh: () => {} });
+const Ctx = createContext({
+  systemName: "Activo",
+  showClock: true,
+  repsUnit: "rp",
+  weightUnit: "kg",
+  trainingTitle: "Entrenamiento",
+  forceUppercase: false,
+  logoUrl: FALLBACK_LOGO,
+  refresh: () => {},
+});
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [systemName, setSystemName] = useState("Activo");
@@ -12,6 +27,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [repsUnit, setRepsUnit] = useState("rp");
   const [weightUnit, setWeightUnit] = useState("kg");
   const [trainingTitle, setTrainingTitle] = useState("Entrenamiento");
+  const [forceUppercase, setForceUppercase] = useState(false);
   const [logoUrl, setLogoUrl] = useState(FALLBACK_LOGO);
 
   const refresh = useCallback(() => {
@@ -21,6 +37,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       setRepsUnit((s.repsUnit as string) || "rp");
       setWeightUnit((s.weightUnit as string) || "kg");
       setTrainingTitle((s.trainingTitle as string) || "Entrenamiento");
+      setForceUppercase(s.forceUppercase === true);
     });
     const url = getLogoUrl();
     fetch(url, { method: "HEAD" })
@@ -28,14 +45,31 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       .catch(() => setLogoUrl(FALLBACK_LOGO));
   }, []);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   useEffect(() => {
     const link = document.querySelector<HTMLLinkElement>("link[rel='icon']");
     if (link) link.href = logoUrl;
   }, [logoUrl]);
 
-  return <Ctx.Provider value={{ systemName, showClock, repsUnit, weightUnit, trainingTitle, logoUrl, refresh }}>{children}</Ctx.Provider>;
+  return (
+    <Ctx.Provider
+      value={{
+        systemName,
+        showClock,
+        repsUnit,
+        weightUnit,
+        trainingTitle,
+        forceUppercase,
+        logoUrl,
+        refresh,
+      }}
+    >
+      {children}
+    </Ctx.Provider>
+  );
 }
 
 export const useSettings = () => useContext(Ctx);

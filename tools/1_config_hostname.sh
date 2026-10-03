@@ -9,4 +9,4 @@ sudo systemctl start avahi-daemon
 # Setear hostname
 # sudo hostnamectl set-hostname activo
 
-sudo reboot
+sudo reboot 

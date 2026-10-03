@@ -7,6 +7,7 @@ import {
 } from "../services/routineService";
 import type { RoutineData } from "../types/api";
 import { usePageTitle } from "../hooks/usePageTitle";
+import { useSettings } from "../hooks/useSettings";
 import { norm } from "../utils/string";
 import ConfirmDialog from "../components/ConfirmDialog";
 import RoutineModal from "../components/RoutineModal";
@@ -31,6 +32,8 @@ export default function Routines() {
     trainees: { trainee_id: string; name: string; color: string }[];
   } | null>(null);
 
+  const { forceUppercase } = useSettings();
+
   usePageTitle("Rutinas");
 
   const fetchRoutines = useCallback(() => {
@@ -51,7 +54,11 @@ export default function Routines() {
         norm(r.name).includes(norm(search)) &&
         (showTemplates || r.is_template === 0),
     )
-    .sort((a, b) => b.is_template - a.is_template);
+    .sort(
+      (a, b) =>
+        b.is_template - a.is_template ||
+        a.name.localeCompare(b.name, "es", { sensitivity: "base" }),
+    );
 
   const handleDuplicate = async (r: RoutineData) => {
     setDuplicating(r.routine_id);
@@ -96,7 +103,10 @@ export default function Routines() {
       <span>Plantilla</span>
     ) : (
       <button
-        onClick={(e) => { e.stopPropagation(); openTrainees(r); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          openTrainees(r);
+        }}
         className={
           r.trainee_count > 0
             ? "underline hover:text-brand-dark cursor-pointer"
@@ -160,7 +170,9 @@ export default function Routines() {
                 className={`rounded-lg px-4 py-3 flex items-center justify-between gap-3 cursor-pointer transition ${r.is_template ? "bg-white/50 border-2 border-dashed border-brand-sage hover:bg-white/70" : "bg-white shadow hover:bg-brand-cream/60"}`}
               >
                 <div className="min-w-0">
-                  <p className="font-semibold text-brand-dark truncate">
+                  <p
+                    className={`font-semibold text-brand-dark truncate${forceUppercase ? " uppercase" : ""}`}
+                  >
                     {r.name}
                   </p>
                   <p className="text-sm text-brand-olive truncate">
@@ -206,7 +218,9 @@ export default function Routines() {
                   </span>
                 </div>
                 <div className="p-3 flex flex-col flex-1">
-                  <p className="font-semibold text-brand-dark truncate text-center">
+                  <p
+                    className={`font-semibold text-brand-dark truncate text-center${forceUppercase ? " uppercase" : ""}`}
+                  >
                     {r.name}
                   </p>
                   <p className="text-xs text-brand-olive text-center mt-1">

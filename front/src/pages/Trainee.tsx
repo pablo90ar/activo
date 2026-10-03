@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { getTrainees } from "../services/traineeService";
 import type { TraineeData } from "../types/api";
 import { usePageTitle } from "../hooks/usePageTitle";
+import { useSettings } from "../hooks/useSettings";
 import { norm } from "../utils/string";
 import { fmtDate } from "../utils/format";
 import TraineeModal from "../components/TraineeModal";
@@ -17,9 +18,13 @@ export default function Trainee() {
   const [viewMode, setViewMode] = useState<"list" | "cards">("list");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [modal, setModal] = useState<{ mode: "create" | "edit"; traineeId?: string } | null>(null);
+  const [modal, setModal] = useState<{
+    mode: "create" | "edit";
+    traineeId?: string;
+  } | null>(null);
   const [routineModal, setRoutineModal] = useState<string | null>(null);
   const [photoVersion, setPhotoVersion] = useState(0);
+  const { forceUppercase } = useSettings();
 
   usePageTitle("Alumnos");
 
@@ -31,9 +36,15 @@ export default function Trainee() {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => { fetchTrainees(); }, [fetchTrainees]);
+  useEffect(() => {
+    fetchTrainees();
+  }, [fetchTrainees]);
 
-  const filtered = trainees.filter((t) => norm(t.name).includes(norm(search)));
+  const filtered = trainees
+    .filter((t) => norm(t.name).includes(norm(search)))
+    .sort((a, b) =>
+      a.name.localeCompare(b.name, "es", { sensitivity: "base" }),
+    );
 
   const handleExport = () => {
     const data = filtered.map((t) => ({
@@ -67,7 +78,9 @@ export default function Trainee() {
             <button
               onClick={() => setModal({ mode: "create" })}
               className="px-4 py-2 bg-brand-action text-white rounded-lg shadow font-medium hover:bg-brand-action-hover transition shrink-0"
-            >+ Nuevo</button>
+            >
+              + Nuevo
+            </button>
           </div>
           <div className="flex gap-2 items-center">
             <ViewToggle value={viewMode} onChange={setViewMode} />
@@ -77,8 +90,19 @@ export default function Trainee() {
                 className="px-3 py-2 h-[38px] bg-white text-brand-olive rounded-lg shadow font-medium hover:bg-gray-100 transition flex items-center gap-1 text-sm"
                 title="Exportar a Excel"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"
+                  />
                 </svg>
                 .xls
               </button>
@@ -86,10 +110,16 @@ export default function Trainee() {
           </div>
         </div>
 
-        {loading && <p className="text-center text-brand-dark text-lg">Cargando...</p>}
-        {error && <p className="text-center text-red-700 text-lg">Error: {error}</p>}
+        {loading && (
+          <p className="text-center text-brand-dark text-lg">Cargando...</p>
+        )}
+        {error && (
+          <p className="text-center text-red-700 text-lg">Error: {error}</p>
+        )}
         {!loading && !error && filtered.length === 0 && (
-          <p className="text-center text-brand-olive text-lg">No se encontraron alumnos.</p>
+          <p className="text-center text-brand-olive text-lg">
+            No se encontraron alumnos.
+          </p>
         )}
 
         {viewMode === "list" && filtered.length > 0 && (
@@ -97,17 +127,40 @@ export default function Trainee() {
             {filtered.map((t) => (
               <div
                 key={t.trainee_id}
-                onClick={() => setModal({ mode: "edit", traineeId: t.trainee_id })}
+                onClick={() =>
+                  setModal({ mode: "edit", traineeId: t.trainee_id })
+                }
                 className="bg-white rounded-lg shadow px-4 py-3 flex items-center justify-between gap-3 cursor-pointer hover:bg-brand-cream/60 transition"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <TraineeAvatar traineeId={t.trainee_id} name={t.name} color={t.color} photoVersion={photoVersion} clickable />
-                  <p className="font-semibold text-brand-dark truncate">{t.name}</p>
+                  <TraineeAvatar
+                    traineeId={t.trainee_id}
+                    name={t.name}
+                    color={t.color}
+                    photoVersion={photoVersion}
+                    clickable
+                  />
+                  <p
+                    className={`font-semibold text-brand-dark truncate${forceUppercase ? " uppercase" : ""}`}
+                  >
+                    {t.name}
+                  </p>
                 </div>
-                {t.routine_name
-                  ? <button onClick={(e) => { e.stopPropagation(); setRoutineModal(t.routine_id); }} className="px-3 py-1.5 text-sm bg-brand-cream text-brand-dark rounded-lg hover:bg-brand-sage hover:text-white transition shrink-0">{t.routine_name}</button>
-                  : <span className="text-sm text-gray-400 shrink-0">Sin rutina</span>
-                }
+                {t.routine_name ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setRoutineModal(t.routine_id);
+                    }}
+                    className="px-3 py-1.5 text-sm bg-brand-cream text-brand-dark rounded-lg hover:bg-brand-sage hover:text-white transition shrink-0"
+                  >
+                    {t.routine_name}
+                  </button>
+                ) : (
+                  <span className="text-sm text-gray-400 shrink-0">
+                    Sin rutina
+                  </span>
+                )}
               </div>
             ))}
           </div>
@@ -118,18 +171,46 @@ export default function Trainee() {
             {filtered.map((t) => (
               <div
                 key={t.trainee_id}
-                onClick={() => setModal({ mode: "edit", traineeId: t.trainee_id })}
+                onClick={() =>
+                  setModal({ mode: "edit", traineeId: t.trainee_id })
+                }
                 className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col cursor-pointer hover:bg-brand-cream/60 transition"
               >
-                <div className="flex items-center justify-center py-6" style={{ backgroundColor: t.color || '#9AA595' }}>
-                  <TraineeAvatar traineeId={t.trainee_id} name={t.name} color={t.color} size="w-40 h-40" textSize="text-7xl" photoVersion={photoVersion} clickable />
+                <div
+                  className="flex items-center justify-center py-6"
+                  style={{ backgroundColor: t.color || "#9AA595" }}
+                >
+                  <TraineeAvatar
+                    traineeId={t.trainee_id}
+                    name={t.name}
+                    color={t.color}
+                    size="w-40 h-40"
+                    textSize="text-7xl"
+                    photoVersion={photoVersion}
+                    clickable
+                  />
                 </div>
                 <div className="p-3 flex flex-col flex-1">
-                  <p className="font-semibold text-brand-dark truncate text-center">{t.name}</p>
-                  {t.routine_name
-                    ? <button onClick={(e) => { e.stopPropagation(); setRoutineModal(t.routine_id); }} className="text-xs text-brand-dark truncate text-center mt-1 hover:text-[#5B7E6A] transition">{t.routine_name}</button>
-                    : <p className="text-xs text-gray-400 truncate text-center mt-1">Sin rutina</p>
-                  }
+                  <p
+                    className={`font-semibold text-brand-dark truncate text-center${forceUppercase ? " uppercase" : ""}`}
+                  >
+                    {t.name}
+                  </p>
+                  {t.routine_name ? (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setRoutineModal(t.routine_id);
+                      }}
+                      className="text-xs text-brand-dark truncate text-center mt-1 hover:text-[#5B7E6A] transition"
+                    >
+                      {t.routine_name}
+                    </button>
+                  ) : (
+                    <p className="text-xs text-gray-400 truncate text-center mt-1">
+                      Sin rutina
+                    </p>
+                  )}
                 </div>
               </div>
             ))}
@@ -142,15 +223,25 @@ export default function Trainee() {
           mode={modal.mode}
           traineeId={modal.traineeId}
           onClose={() => setModal(null)}
-          onSaved={() => { setModal(null); fetchTrainees(); setPhotoVersion((v) => v + 1); }}
-          onDeleted={() => { setModal(null); fetchTrainees(); }}
+          onSaved={() => {
+            setModal(null);
+            fetchTrainees();
+            setPhotoVersion((v) => v + 1);
+          }}
+          onDeleted={() => {
+            setModal(null);
+            fetchTrainees();
+          }}
         />
       )}
       {routineModal && (
         <RoutineModal
           routineId={routineModal}
           onClose={() => setRoutineModal(null)}
-          onSaved={() => { setRoutineModal(null); fetchTrainees(); }}
+          onSaved={() => {
+            setRoutineModal(null);
+            fetchTrainees();
+          }}
         />
       )}
     </div>
